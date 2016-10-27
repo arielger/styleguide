@@ -1,213 +1,97 @@
-Auth0 Styleguide
-================
+# Auth0 React Components
 
-Auth0 Product Style Guide. **This is for internal use by Auth0 only.**
+Library of Auth0 React components. This is for internal use by Auth0 only.
 
+## Installation
 
-<img src="https://cloudup.com/cJZuvZroxvc+" />
-
-## Usage
-
-We encourage you to use our CDN resource, but if you want to extend you can either use [Component(1)][component-home] or [Bower][bower-home] for that.
-Instructions on the build process are detailed below.
-
-### CDN
-Using our CDN is the simplest solution. Just add the following line in your project's HTML head and you are done.
-
-~~~html
-<link href="https://cdn.auth0.com/styleguide/latest/index.css" rel="stylesheet" />
-~~~
-
-If you require any other asset listed under the `lib` folder, you can follow a simple rule: `https://cdn.auth0.com/styleguide/latest/<path-to-asset-under-lib>`
-
-For example, if you want to retrieve our logo:
-
-```html
-<!-- Retrieving the logo at `lib/logos/img/badge.png` -->
-<img src="https://cdn.auth0.com/styleguide/latest/lib/logos/img/badge.png">
+If you are using npm you can do:
 ```
-
-### Run locally
-
-To run locally
-
-```bash
-  npm i
-  npm run dev
+npm i --save auth0/styleguide#react-components-1.0.0
 ```
+This will let you consume the components as a collection of ES modules using a module bundler like Webpack or Browserify.
 
-### Bower
-
-Bower usage is only recomended when you plan to extend the styleguide from build. If that's not the case just use our CDN as described [above][cdn-hash].
-
-#### Install
-
-```bash
-bower install auth0/styleguide
-```
-
-```json
-{
-  "dependencies": {
-    "auth0-styleguide": "auth0/styleguide"
-  }
-}
-```
-
-#### Build
-
-Since we use stylus for compiling our assets. So you should translate this build tasks to your own build process:
-
-```bash
-stylus --include-css --include bower_components --resolve-url --out <your_dest_path> your_index.styl
-cp -R lib/**/* <your_dest_path>
-```
-
-You may use [bower][bower-home] or [gulp][gulp-home] or any task/build helper of your preference. Just make sure the final folder structure looks like this:
+You can use the components like this:
 
 ```
-<your_dest_path>/
-|- lib/
-|  |- ...
-| - index.css
+import { Select, TryBanner, EmptyState } from 'auth0-styleguide-react-components';
 ```
 
-#### Usage
+Also you can download the files from our CDN:
 
-With a build process well defined, you can now include the styleguide from your `index.styl`
-
-```stylus
-// use all styleguide styles
-@include 'bower_components/auth0-styleguide'
-
-// define your own
-body.my-custom
-  .styles-here
-    color: red;
+```
+<link rel="stylesheet" href="https://cdn.auth0.com/styleguide-react-components/0.0.0/react-components.css" />
+<script src="https://cdn.auth0.com/styleguide-react-components/0.0.0/react-components.js"></script>
 ```
 
-Or perhaps you want to extend just parts of it by:
+This will include an UMD version that make the components available as a `window.Auth0ReactComponents` global variable.
 
-```stylus
-// use only colors
-@include 'bower_components/auth0-styleguide/lib/vars'
+## Development
 
-// and override color-red
-color-red = '#ff0000';
+**Node version: 6.9.x NPM version: 3.10.x**
+
+### Add a new component
+
+You can develop new components using [React StoryBook](https://github.com/kadirahq/react-storybook). Just run `npm start` and add your component inside the `/src` folder with the following files:
+
+#### **index.js**
+Main component file, it should export the main component.
+
+We use [react-docgen](https://github.com/reactjs/react-docgen) to document our components using the following structure:
 ```
+import React, { PropTypes } from 'react';
 
-### Component(1)
+/**
+ * Example component title: Example component description.
+ */
+const ExampleComponent = ({ prop1, prop2 }) => (
+	<div>Example component</div>
+);
 
-Component usage is only recomended when you plan to extend the styleguide from build. If that's not the case just use our CDN as described [above][cdn-hash].
+ExampleComponent.propTypes = {
+  /**
+   * prop1 description
+   */
+  prop1: PropTypes.array.isRequired,
+  /**
+   * prop2 description
+   */
+  prop2: PropTypes.number.isRequired,
+};
 
-The following details on installation and usage are made according to the latest component version. Check Component's [guide][component-guide] for more information.
-
-#### Install
-
-`component install auth0/styleguide`
-
-```json
-{
-  "dependencies": {
-    "auth0/stylguide": "2.0.0"
-  }
-}
+export default ExampleComponent;
 ```
+#### **examples.js**
 
-#### Build
+Export an array of objects representing the different examples of the component to showcase them in the [Auth0 React Styleguide](https://styleguide.auth0.com/react).
 
-When using component you will have to build your styles using styleguide with a build step for stylus support.
+Each object of the array can have the following properties:
 
-Basically, you will have to reproduce the line: `stylus --include-css --include ./components [files]` from Stylus [Javascript API][stylus-api-home].
+| Property | Type | Description |
+|:---|:---|:---|
+|component|React element|React element|
+|code|string|Code of the component (should match the code of the component property)
+|center|boolean|Center the component in the middle of the playground
+|title|string|Example title
+|showTitle|boolean|Show the example title
+|url|string| Url for the component page
 
-This is an example for a [component-builder][component-builder-home] plugin setup.
+#### **index.test.js**
 
-```js
-// stylus-plugin.js
-var stylus = require('stylus');
+Test your component using [mocha](https://github.com/mochajs/mocha), [chai](https://github.com/chaijs/chai) and [enzyme](https://github.com/airbnb/enzyme).
 
-module.exports = function stylusPlugin(file, done) {
-  if (file.extension !== 'styl') return done();
+#### **index.stories.js**
 
-  file.read(oncontents);
+Add stories for your React component. You can check [React StoryBook - Writing Stories](https://getstorybook.io/docs/react-storybook/basics/writing-stories) for more information.
 
-  function oncontents (err, string) {
-    if (err) return done(err);
+### Components style
 
-    var renderer = stylus(string, {
-      // add `./components/` folder for lookup
-      paths: [process.cwd() + '/components']
-    });
+Follow this conventions when you are developing components:
 
-    // set `--include-css` flag
-    renderer.set('includeCSS', true);
-
-    renderer.render(function (err, result) {
-      if(err) return done(err);
-      file.extension = 'css';
-      file.string = result;
-      done();
-    });
-  }
-}
-
-// build.js
-var stylus = require('./stylus-plugin.js');
-var Builder = require('component-builder');
-
-Builder.styles(tree)
-  .use('styles', stylus)
-  .end(function (err, result) {
-    // done
-  });
-```
-
-#### Usage
-
-With a build process well defined, you can now include the styleguide from your `index.styl`
-
-```stylus
-// use all styleguide styles
-@include 'auth0/styleguide/2.0.0'
-
-// define your own
-body.my-custom
-  .styles-here
-    color: red;
-```
-
-Or perhaps you want to extend just parts of it by:
-
-```stylus
-// use only colors
-@include 'auth0/styleguide/2.0.0/lib/vars'
-
-// and override color-red
-color-red = '#ff0000';
-```
-
-## Releasing a new version
-
-Run the command `bin/version <patch|minor|major|version-no>` inside the root of the repo. This will commit a new version for you.
-
-Example
-```
-bin/version patch
-```
+- Your components should be [stateless functional components](https://medium.com/@joshblack/stateless-components-in-react-0-14-f9798f8b992d#.3bqak5qjt).
+- Add propTypes for all properties and add the proper comments so that information is shown in the Auth0 React Styleguide.
+- Prefix your component css classes with it's name so it doesn't conflict with others existing classes.
 
 
-## License
+### Releasing a new version
 
-All the logos and branding are copyright Auth0 and may not be used or reproduced without explicit permission from Auth0 Inc.
-
-The icons are licensed from [Budi Harto Tanrim](http://budicon.buditanrim.co/). All other third-party components are subject to their own licenses.
-
-<!-- Resources -->
-[cdn-hash]: #cdn
-[component-home]: https://github.com/componentjs/component
-[component-guide]: https://github.com/componentjs/guide
-[component-builder-home]: https://github.com/componentjs/builder2.js
-[gulp-home]: http://gulpjs.com/
-[grunt-home]: http://gruntjs.com/
-[bower-home]: https://bower.io
-[stylus-api-home]: http://learnboost.github.io/stylus/docs/js.html
+Complete
